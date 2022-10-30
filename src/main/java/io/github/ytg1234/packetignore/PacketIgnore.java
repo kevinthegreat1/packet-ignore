@@ -1,17 +1,17 @@
 package io.github.ytg1234.packetignore;
 
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PacketIgnore implements ModInitializer {
-    public static Logger logger = LogManager.getLogger("PacketIgnore");
+    public static String MOD_ID = "packetignore";
+    public static String MOD_NAME = "Packet Ignore";
+    public static Logger logger = LoggerFactory.getLogger(MOD_ID);
 
     @Override
     public void onInitialize() {
-        logger.info("PacketIgnore initializing");
+        logger.info(MOD_NAME + " initialized.");
     }
 }
 
