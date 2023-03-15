@@ -5,13 +5,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class PacketIgnore implements ModInitializer {
-    public static String MOD_ID = "packetignore";
-    public static String MOD_NAME = "Packet Ignore";
-    public static Logger logger = LoggerFactory.getLogger(MOD_ID);
+    public static final String MOD_ID = "packetignore";
+    public static final String MOD_NAME = "Packet Ignore";
+    public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
     @Override
     public void onInitialize() {
-        logger.info(MOD_NAME + " initialized.");
+        LOGGER.info(MOD_NAME + " initialized.");
     }
 }
 

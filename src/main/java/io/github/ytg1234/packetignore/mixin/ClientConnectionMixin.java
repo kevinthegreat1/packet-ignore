@@ -1,5 +1,6 @@
 package io.github.ytg1234.packetignore.mixin;
 
+import io.github.ytg1234.packetignore.PacketIgnore;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkSide;
 import net.minecraft.network.packet.Packet;
@@ -34,7 +35,7 @@ public abstract class ClientConnectionMixin {
     private void packetignore_ignorePackets(Packet<?> packet, PacketListener listener) {
         if (packet instanceof HandshakeC2SPacket || packet instanceof LoginHelloC2SPacket || packet instanceof LoginKeyC2SPacket || packet instanceof LoginQueryResponseC2SPacket) {
             handlePacket(packet, listener);
-            System.out.println("Handshake or login received");
+            PacketIgnore.LOGGER.info("Handshake or login received");
             return;
         }
         if (side == NetworkSide.CLIENTBOUND) {
