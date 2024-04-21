@@ -1,11 +1,14 @@
 package io.github.ytg1234.packetignore.mixin;
 
-import io.github.ytg1234.packetignore.PacketIgnore;
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkSide;
-import net.minecraft.network.packet.Packet;
 import net.minecraft.network.listener.PacketListener;
+import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.c2s.common.CustomPayloadC2SPacket;
+import net.minecraft.network.packet.c2s.config.ReadyC2SPacket;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
+import net.minecraft.network.packet.c2s.login.EnterConfigurationC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginKeyC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginQueryResponseC2SPacket;
@@ -14,7 +17,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 
 import java.util.Random;
 
@@ -24,24 +26,11 @@ public abstract class ClientConnectionMixin {
     @Final
     private NetworkSide side;
 
-    @Shadow
-    private static <T extends PacketListener> void handlePacket(Packet<T> packet, PacketListener listener) {
-    }
-
     @Unique
     private final Random random = new Random();
 
-    @Redirect(method = "channelRead0(Lio/netty/channel/ChannelHandlerContext;Lnet/minecraft/network/packet/Packet;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/ClientConnection;handlePacket(Lnet/minecraft/network/packet/Packet;Lnet/minecraft/network/listener/PacketListener;)V"))
-    private void packetignore_ignorePackets(Packet<?> packet, PacketListener listener) {
-        if (packet instanceof HandshakeC2SPacket || packet instanceof LoginHelloC2SPacket || packet instanceof LoginKeyC2SPacket || packet instanceof LoginQueryResponseC2SPacket) {
-            handlePacket(packet, listener);
-            PacketIgnore.LOGGER.info("Handshake or login received");
-            return;
-        }
-        if (side == NetworkSide.CLIENTBOUND) {
-            handlePacket(packet, listener);
-            return;
-        }
-        if (random.nextBoolean()) handlePacket(packet, listener);
+    @WrapWithCondition(method = "channelRead0(Lio/netty/channel/ChannelHandlerContext;Lnet/minecraft/network/packet/Packet;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/ClientConnection;handlePacket(Lnet/minecraft/network/packet/Packet;Lnet/minecraft/network/listener/PacketListener;)V"))
+    private boolean packetignore_ignorePackets(Packet<?> packet, PacketListener listener) {
+        return side == NetworkSide.CLIENTBOUND || packet instanceof HandshakeC2SPacket || packet instanceof LoginHelloC2SPacket || packet instanceof LoginKeyC2SPacket || packet instanceof LoginQueryResponseC2SPacket || packet instanceof EnterConfigurationC2SPacket || packet instanceof CustomPayloadC2SPacket || packet instanceof ReadyC2SPacket || random.nextBoolean();
     }
 }
